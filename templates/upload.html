@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Liquibase Automation</title>
+</head>
+<body>
+    <h1>SQL Files for release 1.0.0</h1>
+
+    <form action="/upload1" method="post" enctype="multipart/form-data">
+        <span>'Choose SQL files for users object'</span><br>
+        <label for="files"> {{ data1 }}</label>
+        <input type="file" id="files" name="files" accept=".sql" multiple>
+        <input type="submit" value="Upload">
+    </form>
+
+    <form action="/upload2" method="post" enctype="multipart/form-data">
+        <span>'Choose SQL files for services object'</span><br>
+        <label for="files"> {{ data2 }}</label>
+        <input type="file" id="files" name="files" accept=".sql" multiple>
+        <input type="submit" value="Upload">
+    </form>
+
+    <form action="/upload3" method="post" enctype="multipart/form-data">
+        <span>'Choose SQL files for transactions object'</span><br>
+        <label for="files"> {{  data3  }}</label>
+        <input type="file" id="files" name="files" accept=".sql" multiple>
+        <input type="submit" value="Upload">
+    </form>
+
+    <form action="/upload4" method="post" enctype="multipart/form-data">
+        <span>'Choose SQL files for user_plans object'</span><br>
+        <label for="files"> {{   data4  }}</label>
+        <input type="file" id="files" name="files" accept=".sql" multiple>
+        <input type="submit" value="Upload">
+    </form>
+
+</body>
+</html>

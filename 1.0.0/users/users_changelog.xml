@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+    http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd ">
+
+<changeSet id="1" author="dev1">
+        <sqlFile path="1.0.0/users/create_users_object.sql" endDelimiter=";"/>
+</changeSet>
+
+<changeSet id="2" author="dev1">
+        <sqlFile path="1.0.0/users/alter_users_object.sql" endDelimiter=";"/>
+</changeSet>
+
+<changeSet id="3" author="dev1">
+        <sqlFile path="1.0.0/users/insert_records.sql" endDelimiter=";"/>
+</changeSet>
+
+</databaseChangeLog>
