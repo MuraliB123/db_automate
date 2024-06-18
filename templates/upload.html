@@ -3,37 +3,158 @@
 <head>
     <meta charset="UTF-8">
     <title>Liquibase Automation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+       .content {
+        padding-top: 3%;
+       }
+        h1 {
+            margin-top: 20px;
+            color: #333;
+        }
+
+        .form-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center; /* Center the forms within the container */
+            gap: 20px; /* Space between the forms */
+            max-width: 80%; /* Optional: limit the max-width of the container */
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        form, .banner {
+            background: #fff;
+            padding: 20px;
+            margin: 10px; /* Margin between forms and banners */
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: 250px; /* Width of each form and banner */
+        }
+
+        form span, .banner span {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        input[type="file"] {
+            display: block;
+            margin-bottom: 15px;
+            padding: 5px;
+            font-size: 14px;
+        }
+
+        input[type="submit"] {
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        .banner {
+            background-color: #e0f7fa;
+            text-align: center;
+        }
+
+        .banner span {
+            color: #007BFF;
+            padding:50px;
+        }
+        .banner span a {
+            text-decoration: none;
+        }
+        .marquee-container {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: #007BFF;
+            color: #fff;
+            text-align: center;
+            padding: 10px 0;
+            overflow: hidden;
+        }
+
+        .marquee-text {
+            display: inline-block;
+            white-space: nowrap;
+            animation: marquee 15s linear infinite;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+    </style>
 </head>
 <body>
-    <h1>SQL Files for release 1.0.0</h1>
+<div class="content">
+   <center> <h1>SQL Files for release 1.0.0</h1></center>
 
-    <form action="/upload1" method="post" enctype="multipart/form-data">
-        <span>'Choose SQL files for users object'</span><br>
-        <label for="files"> {{ data1 }}</label>
-        <input type="file" id="files" name="files" accept=".sql" multiple>
-        <input type="submit" value="Upload">
-    </form>
+    <div class="form-container">
+        <form action="/upload1" method="post" enctype="multipart/form-data">
+            <span>Choose SQL files for users object</span>
+            <label for="files1">{{ data1 }}</label>
+            <input type="file" id="files1" name="files" accept=".sql" multiple>
+            <input type="submit" value="Upload">
+        </form>
 
-    <form action="/upload2" method="post" enctype="multipart/form-data">
-        <span>'Choose SQL files for services object'</span><br>
-        <label for="files"> {{ data2 }}</label>
-        <input type="file" id="files" name="files" accept=".sql" multiple>
-        <input type="submit" value="Upload">
-    </form>
+        <form action="/upload2" method="post" enctype="multipart/form-data">
+            <span>Choose SQL files for services object</span>
+            <label for="files2">{{ data2 }}</label>
+            <input type="file" id="files2" name="files" accept=".sql" multiple>
+            <input type="submit" value="Upload">
+        </form>
 
-    <form action="/upload3" method="post" enctype="multipart/form-data">
-        <span>'Choose SQL files for transactions object'</span><br>
-        <label for="files"> {{  data3  }}</label>
-        <input type="file" id="files" name="files" accept=".sql" multiple>
-        <input type="submit" value="Upload">
-    </form>
+        <form action="/upload3" method="post" enctype="multipart/form-data">
+            <span>Choose SQL files for transactions object</span>
+            <label for="files3">{{ data3 }}</label>
+            <input type="file" id="files3" name="files" accept=".sql" multiple>
+            <input type="submit" value="Upload">
+        </form>
 
-    <form action="/upload4" method="post" enctype="multipart/form-data">
-        <span>'Choose SQL files for user_plans object'</span><br>
-        <label for="files"> {{   data4  }}</label>
-        <input type="file" id="files" name="files" accept=".sql" multiple>
-        <input type="submit" value="Upload">
-    </form>
+        <form action="/upload4" method="post" enctype="multipart/form-data">
+            <span>Choose SQL files for user_plans object</span>
+            <label for="files4">{{ data4 }}</label>
+            <input type="file" id="files4" name="files" accept=".sql" multiple>
+            <input type="submit" value="Upload">
+        </form>
+
+        <!-- Banner Notes -->
+        <div class="banner">
+            <span><a href="#">Add more schemas</a></span>
+        </div>
+
+        <div class="banner">
+            <span><a href="#">Add more schemas</a></span>
+        </div>
+    </div>
+</div>
+
+<div class="marquee-container">
+    <div class="marquee-text"> For getting a Liquibase instance and further configurations, contact the DBA support team: Ram@wellsfargo.com </div>
+</div>
 
 </body>
 </html>
