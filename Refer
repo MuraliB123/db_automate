@@ -1,0 +1,72 @@
+from flask import Flask, request, jsonify
+import subprocess
+import time
+import psycopg2
+from psycopg2 import OperationalError
+import re
+
+app = Flask(__name__)
+
+def check_db_connection():
+    try:
+        # Attempt to connect to the H2 database
+        conn = psycopg2.connect(
+            dbname="yourdbname",
+            user="yourdbuser",
+            password="yourdbpassword",
+            host="localhost",
+            port="5432"  # Adjust the port if necessary
+        )
+        conn.close()
+        return True
+    except OperationalError:
+        return False
+
+def log_liquibase_changesets():
+    try:
+        # Run the Liquibase update command and capture the output
+        result = subprocess.run(['liquibase', 'update'], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        
+        # Define a regex to capture changeset details
+        pattern = re.compile(r'Changeset ([\w/]+\.xml)::([\w-]+)::([\w-]+)')
+        
+        # Find all matches in the output
+        changesets = pattern.findall(result.stdout)
+        
+        # Log the changesets
+        with open('liquibase_changeset_log.txt', 'a') as log_file:
+            for changeset in changesets:
+                log_file.write(f'ID: {changeset[1]}, Author: {changeset[2]}, File: {changeset[0]}\n')
+        
+        return result.stdout
+    except subprocess.CalledProcessError as e:
+        return e.stderr
+
+@app.route('/run_liquibase_update', methods=['POST'])
+def run_liquibase_update():
+    try:
+        # Start the H2 database using PowerShell script in the background
+        h2_process = subprocess.Popen(['powershell', '-Command', './start-h2'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+        # Check if the H2 database is up and running
+        max_retries = 12
+        retry_count = 0
+        while retry_count < max_retries:
+            if check_db_connection():
+                break
+            retry_count += 1
+            time.sleep(5)  # Wait for 5 seconds before retrying
+
+        if retry_count == max_retries:
+            return jsonify({"status": "error", "output": "H2 database did not start in time"}), 500
+
+        # Log and run the Liquibase update command
+        liquibase_output = log_liquibase_changesets()
+        return jsonify({"status": "success", "output": liquibase_output})
+    except subprocess.CalledProcessError as e:
+        return jsonify({"status": "error", "output": e.stderr.decode('utf-8')}), 500
+    except Exception as e:
+        return jsonify({"status": "error", "output": str(e)}), 500
+
+if __name__ == '__main__':
+    app.run(debug=True)
