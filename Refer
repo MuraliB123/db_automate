@@ -1,30 +1,60 @@
 import xml.etree.ElementTree as ET
 import os
 
-def parse_changesets(file_path):
-    changesets = []
-    try:
-        tree = ET.parse(file_path)
-        root = tree.getroot()
-        namespace = '{http://www.liquibase.org/xml/ns/dbchangelog}'
+namespace = {'lb': 'http://www.liquibase.org/xml/ns/dbchangelog'}
+rollback_logic = {
+    'createTable': '<dropTable tableName="{}"/>',
+    'addColumn': '<dropColumn tableName="{}" columnName="{}"/>',
+    # Add more logic for different types of changesets as needed
+}
 
-        for elem in root.findall(f'{namespace}include'):
-            included_file = elem.attrib.get('file')
-            if included_file:
-                included_file_path = os.path.join(os.path.dirname(file_path), included_file)
-                changesets.extend(parse_changesets(included_file_path))
-        
-        for changeset in root.findall(f'{namespace}changeset'):
-            changeset_id = changeset.attrib.get('id')
-            author = changeset.attrib.get('author')
-            changesets.append((file_path, changeset_id, author))
+def add_rollback_tags(file_path):
+    tree = ET.parse(file_path)
+    root = tree.getroot()
 
-    except ET.ParseError as e:
-        print(f"Error parsing XML file {file_path}: {e}")
+    changes_made = False
 
-    return changesets
+    for changeset in root.findall('lb:changeSet', namespace):
+        rollback = changeset.find('lb:rollback', namespace)
+        if rollback is None:
+            changes_made = True
+            rollback = ET.SubElement(changeset, 'rollback')
+            
+            for change in changeset:
+                tag = change.tag.split('}')[-1]
+                if tag in rollback_logic:
+                    if tag == 'createTable':
+                        table_name = change.attrib['tableName']
+                        rollback.append(ET.fromstring(rollback_logic[tag].format(table_name)))
+                    elif tag == 'addColumn':
+                        table_name = change.attrib['tableName']
+                        column_name = change.find('lb:column', namespace).attrib['name']
+                        rollback.append(ET.fromstring(rollback_logic[tag].format(table_name, column_name)))
+                    # Add more conditions based on the type of changeset
 
-def log_changesets(changesets):
-    with open('liquibase_changeset_log.txt', 'a') as log_file:
-        for file_path, changeset_id, author in changesets:
-            log_file.write(f'File: {file_path}, ID: {changeset_id}, Author: {author}\n')
+    for include in root.findall('lb:include', namespace):
+        file_attr = include.attrib.get('file')
+        if file_attr and not file_attr.startswith('xml/'):
+            changes_made = True
+            include.set('file', 'xml/' + file_attr)
+
+    for sqlFile in root.findall('.//lb:sqlFile', namespace):
+        path_attr = sqlFile.attrib.get('path')
+        if path_attr and not path_attr.startswith('xml/'):
+            changes_made = True
+            sqlFile.set('path', 'xml/' + path_attr)
+
+    if changes_made:
+        tree.write(file_path)
+        print(f"Modified {file_path}")
+
+def process_changelogs(directory):
+    for root, _, files in os.walk(directory):
+        for file in files:
+            if file.endswith('.xml'):
+                file_path = os.path.join(root, file)
+                add_rollback_tags(file_path)
+
+if __name__ == "__main__":
+    changelog_directory = 'path/to/your/changelogs'
+    process_changelogs(changelog_directory)
