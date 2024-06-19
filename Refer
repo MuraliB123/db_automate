@@ -1,60 +1,63 @@
-import xml.etree.ElementTree as ET
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload File and Folder</title>
+</head>
+<body>
+    <h1>Upload a File and a Folder</h1>
+    <form method="post" action="{{ url_for('upload') }}" enctype="multipart/form-data">
+        <div>
+            <label for="file">Choose file:</label>
+            <input type="file" id="file" name="file" required>
+        </div>
+        <div>
+            <label for="folder">Choose folder (zip):</label>
+            <input type="file" id="folder" name="folder" required>
+        </div>
+        <button type="submit">Upload</button>
+    </form>
+</body>
+</html>from flask import Flask, render_template, request, redirect, url_for
 import os
+import zipfile
 
-namespace = {'lb': 'http://www.liquibase.org/xml/ns/dbchangelog'}
-rollback_logic = {
-    'createTable': '<dropTable tableName="{}"/>',
-    'addColumn': '<dropColumn tableName="{}" columnName="{}"/>',
-    # Add more logic for different types of changesets as needed
-}
+app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = 'uploads/'
 
-def add_rollback_tags(file_path):
-    tree = ET.parse(file_path)
-    root = tree.getroot()
+@app.route('/')
+def index():
+    return render_template('index.html')
 
-    changes_made = False
+@app.route('/upload', methods=['POST'])
+def upload():
+    if 'file' not in request.files or 'folder' not in request.files:
+        return 'No file or folder part in the request'
+    
+    file = request.files['file']
+    folder = request.files['folder']
 
-    for changeset in root.findall('lb:changeSet', namespace):
-        rollback = changeset.find('lb:rollback', namespace)
-        if rollback is None:
-            changes_made = True
-            rollback = ET.SubElement(changeset, 'rollback')
-            
-            for change in changeset:
-                tag = change.tag.split('}')[-1]
-                if tag in rollback_logic:
-                    if tag == 'createTable':
-                        table_name = change.attrib['tableName']
-                        rollback.append(ET.fromstring(rollback_logic[tag].format(table_name)))
-                    elif tag == 'addColumn':
-                        table_name = change.attrib['tableName']
-                        column_name = change.find('lb:column', namespace).attrib['name']
-                        rollback.append(ET.fromstring(rollback_logic[tag].format(table_name, column_name)))
-                    # Add more conditions based on the type of changeset
+    if file.filename == '':
+        return 'No selected file'
+    
+    if folder.filename == '':
+        return 'No selected folder'
 
-    for include in root.findall('lb:include', namespace):
-        file_attr = include.attrib.get('file')
-        if file_attr and not file_attr.startswith('xml/'):
-            changes_made = True
-            include.set('file', 'xml/' + file_attr)
+    # Save the uploaded file
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+    file.save(file_path)
 
-    for sqlFile in root.findall('.//lb:sqlFile', namespace):
-        path_attr = sqlFile.attrib.get('path')
-        if path_attr and not path_attr.startswith('xml/'):
-            changes_made = True
-            sqlFile.set('path', 'xml/' + path_attr)
+    # Save and extract the uploaded folder (zip file)
+    folder_path = os.path.join(app.config['UPLOAD_FOLDER'], folder.filename)
+    folder.save(folder_path)
 
-    if changes_made:
-        tree.write(file_path)
-        print(f"Modified {file_path}")
+    with zipfile.ZipFile(folder_path, 'r') as zip_ref:
+        zip_ref.extractall(os.path.join(app.config['UPLOAD_FOLDER'], folder.filename.split('.')[0]))
 
-def process_changelogs(directory):
-    for root, _, files in os.walk(directory):
-        for file in files:
-            if file.endswith('.xml'):
-                file_path = os.path.join(root, file)
-                add_rollback_tags(file_path)
+    return 'File and folder uploaded successfully'
 
-if __name__ == "__main__":
-    changelog_directory = 'path/to/your/changelogs'
-    process_changelogs(changelog_directory)
+if __name__ == '__main__':
+    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+    app.run(debug=True)
+
