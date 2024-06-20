@@ -1,12 +1,50 @@
 import os
+import shutil
+import tempfile
+import subprocess
 
-def find_sql_files(start_dir='.'):
-    for root, dirs, files in os.walk(start_dir):
-        for file in files:
-            if file.endswith('.sql'):
-                relative_path = os.path.relpath(os.path.join(root, file), start_dir)
-                print(relative_path)
+def clone_specific_folder(repo_url, folder_path, destination_path, branch='main'):
+    # Create a temporary directory
+    temp_dir = tempfile.mkdtemp()
 
-# Specify the starting directory here if it's different from the current directory
-start_directory = '.'
-find_sql_files(start_directory)
+    try:
+        # Build the git clone command with increased buffer size
+        clone_cmd = [
+            'git', 'clone', '--branch', branch, '--depth', '1', repo_url, temp_dir
+        ]
+        
+        print(f"Cloning repository {repo_url} to {temp_dir}")
+        # Run the git clone command
+        result = subprocess.run(clone_cmd, capture_output=True, text=True)
+        if result.returncode != 0:
+            raise subprocess.CalledProcessError(result.returncode, clone_cmd, output=result.stdout, stderr=result.stderr)
+        
+        # Path to the specific folder in the cloned repository
+        src_folder = os.path.join(temp_dir, folder_path)
+        
+        # Ensure the source folder exists
+        if not os.path.exists(src_folder):
+            raise FileNotFoundError(f"The folder {folder_path} does not exist in the repository.")
+
+        # Copy the specific folder to the destination path
+        print(f"Copying folder {src_folder} to {destination_path}")
+        shutil.copytree(src_folder, destination_path, dirs_exist_ok=True)
+
+        print(f"Folder {folder_path} has been successfully copied to {destination_path}")
+
+    except subprocess.CalledProcessError as e:
+        print(f"An error occurred while cloning the repository: {e.stderr}")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+    finally:
+        # Remove the temporary directory
+        shutil.rmtree(temp_dir)
+        print(f"Removed temporary directory {temp_dir}")
+
+# Example usage
+repo_url = 'https://github.com/MuraliB123/pcy_algo.git'
+folder_path = 'src'
+destination_path = '/home/murali/Documents/copy'
+branch = 'main'  # or any specific branch name
+
+clone_specific_folder(repo_url, folder_path, destination_path, branch)
