@@ -1,4 +1,46 @@
-### Title: Automated Database Management with Liquibase CI/CD Integration
+import xml.etree.ElementTree as ET
+import os
 
-### Description:
-This project aims to integrate Liquibase into the CI/CD pipeline to automate the execution of database scripts, ensuring consistent and reliable updates across environments. It includes functionalities for tracking, monitoring, and rolling back database changes, enhancing database version control. A key feature is the auto-generation of changelog files, which simplifies the process of creating and managing database migrations, ensuring seamless and efficient execution by Liquibase in a continuous deployment environment.
+
+file_paths = []
+
+def parse_xml(file_path):
+    global file_paths  
+
+    file_paths.append(file_path)
+    
+    
+    try:
+        tree = ET.parse(file_path)
+        root = tree.getroot()
+
+        
+        for include in root.findall('.//{http://www.liquibase.org/xml/ns/dbchangelog}include'):
+            included_file = include.get('file')
+            if included_file:
+                included_file_path = os.path.join(os.path.dirname(file_path), included_file)
+                parse_xml(included_file_path)
+                
+        for changeSet in root.findall('.//{http://www.liquibase.org/xml/ns/dbchangelog}changeSet'):
+            change_set_id = changeSet.get('id')
+            author = changeSet.get('author')
+            sql_file = changeSet.find('.//{http://www.liquibase.org/xml/ns/dbchangelog}sqlFile')
+            sql_file_path = sql_file.get('path') if sql_file is not None else 'No SQL file path'
+        
+            print(f"Change Set ID: {change_set_id}, Author: {author}, SQL File Path: {sql_file_path}")
+
+
+    except Exception as e:
+        print(f"Failed to process {file_path}: {e}")
+    
+    # get all the change sets and their id author and sql file path (in the current file and print
+
+    return 
+
+main_xml_file = '/home/murali/Documents/db_automate/changelog.xml'
+parse_xml(main_xml_file)
+
+
+print("Processed file paths:")
+#for file_path in file_paths:
+   # print(file_path)
