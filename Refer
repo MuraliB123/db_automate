@@ -3,22 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Log Viewer</title>
+    <title>Home</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
         }
-        pre {
-            background-color: #f4f4f4;
-            border: 1px solid #ccc;
-            padding: 10px;
-            white-space: pre-wrap;
+        a {
+            display: inline-block;
+            padding: 10px 15px;
+            margin: 10px 0;
+            text-decoration: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+        }
+        a:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
-    <h1>Log Viewer</h1>
-    <pre>{{ log_content }}</pre>
+    <h1>Welcome</h1>
+    <a href="{{ url_for('log') }}">View Log</a>
 </body>
 </html>
