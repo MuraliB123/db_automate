@@ -19,16 +19,6 @@
 </head>
 <body>
     <h1>Log Viewer</h1>
-    <pre id="logContent">Loading...</pre>
-    <script>
-        fetch('log.txt')
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById('logContent').textContent = data;
-            })
-            .catch(error => {
-                console.error('Error fetching the log file:', error);
-            });
-    </script>
+    <pre>{{ log_content }}</pre>
 </body>
 </html>
