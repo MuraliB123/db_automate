@@ -1,46 +1,34 @@
-import xml.etree.ElementTree as ET
-import os
-
-
-file_paths = []
-
-def parse_xml(file_path):
-    global file_paths  
-
-    file_paths.append(file_path)
-    
-    
-    try:
-        tree = ET.parse(file_path)
-        root = tree.getroot()
-
-        
-        for include in root.findall('.//{http://www.liquibase.org/xml/ns/dbchangelog}include'):
-            included_file = include.get('file')
-            if included_file:
-                included_file_path = os.path.join(os.path.dirname(file_path), included_file)
-                parse_xml(included_file_path)
-                
-        for changeSet in root.findall('.//{http://www.liquibase.org/xml/ns/dbchangelog}changeSet'):
-            change_set_id = changeSet.get('id')
-            author = changeSet.get('author')
-            sql_file = changeSet.find('.//{http://www.liquibase.org/xml/ns/dbchangelog}sqlFile')
-            sql_file_path = sql_file.get('path') if sql_file is not None else 'No SQL file path'
-        
-            print(f"Change Set ID: {change_set_id}, Author: {author}, SQL File Path: {sql_file_path}")
-
-
-    except Exception as e:
-        print(f"Failed to process {file_path}: {e}")
-    
-    # get all the change sets and their id author and sql file path (in the current file and print
-
-    return 
-
-main_xml_file = '/home/murali/Documents/db_automate/changelog.xml'
-parse_xml(main_xml_file)
-
-
-print("Processed file paths:")
-#for file_path in file_paths:
-   # print(file_path)
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log Viewer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        pre {
+            background-color: #f4f4f4;
+            border: 1px solid #ccc;
+            padding: 10px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>Log Viewer</h1>
+    <pre id="logContent">Loading...</pre>
+    <script>
+        fetch('log.txt')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('logContent').textContent = data;
+            })
+            .catch(error => {
+                console.error('Error fetching the log file:', error);
+            });
+    </script>
+</body>
+</html>
