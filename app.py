@@ -1,72 +1,26 @@
-from flask import Flask, request,render_template,jsonify
-import os
-import subprocess
+from flask import Flask, render_template, request, redirect, url_for
+import pandas as pd
 
 app = Flask(__name__)
 
-
-UPLOAD_FOLDER1 = '/home/murali/Documents/db_automate/1.0.0/users'
-
-UPLOAD_FOLDER2 = '/home/murali/Documents/db_automate/1.0.0/services'
-
-UPLOAD_FOLDER3 = '/home/murali/Documents/db_automate/1.0.0/transactions'
-
-UPLOAD_FOLDER4 = '/home/murali/Documents/db_automate/1.0.0/user_plans'
-
-
-@app.route('/run_liquibase_update', methods=['POST'])
-def run_liquibase_update():
-    try:
-        result = subprocess.run(['liquibase', 'update'], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        return jsonify({"status": "success", "output": result.stdout.decode('utf-8')})
-    
-    except subprocess.CalledProcessError as e:
-        return jsonify({"status": "error", "output": e.stderr.decode('utf-8')}), 500
-
+# Load CSV data
+def load_csv():
+    df = pd.read_csv('data.csv')
+    return df
 
 @app.route('/')
-def upload_form():
-    return render_template('upload.html')
+def index():
+    df = load_csv()
+    return render_template('index.html', data=df.to_dict(orient='records'))
 
-@app.route('/upload1', methods=['POST'])
-def upload_file1():
-    files = request.files.getlist('files')   
-    for file in files:
-        if file:
-            filename = file.filename
-            file_path = os.path.join(UPLOAD_FOLDER1, filename)
-            file.save(file_path)
-    return render_template('upload.html',data1 = "success")
+@app.route('/tag', methods=['POST'])
+def tag():
+    row_id = request.form.get('row_id')
+    author = request.form.get('author')
+    sql_path = request.form.get('sql_path')
+    # Process the data as needed
+    print(f"Row ID: {row_id}, Author: {author}, SQL Path: {sql_path}")
+    return redirect(url_for('index'))
 
-@app.route('/upload2', methods=['POST'])
-def upload_file2():
-    files = request.files.getlist('files')   
-    for file in files:
-        if file:
-            filename = file.filename
-            file_path = os.path.join(UPLOAD_FOLDER2, filename)
-            file.save(file_path)
-    return render_template('upload.html',data2 = "success")
-
-@app.route('/upload3', methods=['POST'])
-def upload_file3():
-    files = request.files.getlist('files')   
-    for file in files:
-        if file:
-            filename = file.filename
-            file_path = os.path.join(UPLOAD_FOLDER3, filename)
-            file.save(file_path)
-    return render_template('upload.html',data3 = "success")
-
-@app.route('/upload4', methods=['POST'])
-def upload_file4():
-    files = request.files.getlist('files')   
-    for file in files:
-        if file:
-            filename = file.filename
-            file_path = os.path.join(UPLOAD_FOLDER4, filename)
-            file.save(file_path)
-    return render_template('run_update.html',data4 = "success")
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(debug=True)
