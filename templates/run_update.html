@@ -1,35 +1,31 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Liquibase Update</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link href="static/style.css" rel="stylesheet">
+  <title>CSV Viewer</title>
 </head>
 <body>
-    <button id="liquibaseButton">Run Liquibase Update</button>
-
-    <div id="result"></div>
-
-    <script>
-        document.getElementById('liquibaseButton').addEventListener('click', function() {
-            fetch('/run_liquibase_update', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    document.getElementById('result').innerText = 'Update Successful:\n' + data.output;
-                } else {
-                    document.getElementById('result').innerText = 'Update Failed:\n' + data.output;
-                }
-            })
-            .catch(error => {
-                document.getElementById('result').innerText = 'An error occurred:\n' + error;
-            });
-        });
-    </script>
+  <div class="container">
+    <h1 class="my-4">CSV Data</h1>
+    <div class="row">
+      {% for row in data %}
+      <div class="col-12">
+        <div class="card">
+          <div><strong>ID:</strong> {{ row.id }}</div>
+          <div><strong>Author:</strong> {{ row.author }}</div>
+          <div><strong>SQL Path:</strong> {{ row.sql_path }}</div>
+          <form method="post" action="{{ url_for('tag') }}">
+            <input type="hidden" name="row_id" value="{{ row.id }}">
+            <input type="hidden" name="author" value="{{ row.author }}">
+            <input type="hidden" name="sql_path" value="{{ row.sql_path }}">
+            <button type="submit" class="btn-custom">Tag</button>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
 </body>
 </html>
