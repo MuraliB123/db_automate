@@ -1,48 +1,58 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Header Design</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-        }
-        .header {
-            background-color: red;
-            color: white;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 20px;
-        }
-        .header .logo {
-            font-size: 1.5em;
-            font-weight: bold;
-        }
-        .header .nav-links {
-            display: flex;
-            gap: 20px;
-        }
-        .header .nav-links a {
-            color: white;
-            text-decoration: none;
-            font-size: 1em;
-        }
-        .header .nav-links a:hover {
-            text-decoration: underline;
-        }
-    </style>
-</head>
-<body>
-    <header class="header">
-        <div class="logo">Wells Fargo</div>
-        <nav class="nav-links">
-            <a href="#link1">Link 1</a>
-            <a href="#link2">Link 2</a>
-            <a href="#link3">Link 3</a>
-        </nav>
-    </header>
-</body>
-</html>
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  .container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  h1 {
+    color: #dc3545; 
+    text-align: center;
+  }
+  
+  .card {
+    border: 2px solid red; 
+    background-color: white; 
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .card div {
+    margin-right: 20px;
+    flex-grow: 1;
+  }
+  
+  .card form {
+    margin: 0;
+  }
+  
+  .card-title,
+  .card-text {
+    color: #dc3545; 
+  }
+  
+  .btn-custom {
+    background-color: crimson; 
+    border: 2px solid white; 
+    color: white; 
+    padding: 10px 20px;
+    cursor: pointer;
+    text-align: center;
+    border-radius: 5px;
+    text-decoration: none;
+   
+  }
+  
+ 
