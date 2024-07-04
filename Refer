@@ -1,30 +1,62 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+public class GenerateChangelogXML {
+
+    public static void main(String[] args) throws Exception {
+        // Create XML document
+        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+        Document doc = dBuilder.newDocument();
+
+        // Create root element
+        Element rootElement = doc.createElement("databaseChangeLog");
+        doc.appendChild(rootElement);
+
+        // Example: Add changeSet for sample.sql
+        addChangeSet(doc, rootElement, "1", "Add sample table", "your_author", "sample.sql");
+
+        // Example: Add changeSet for table.sql
+        addChangeSet(doc, rootElement, "2", "Add table table", "your_author", "table.sql");
+
+        // Write the content into a XML file
+        File xmlFile = new File("changelog.xml");
+        try (Writer writer = new OutputStreamWriter(new FileOutputStream(xmlFile), "UTF-8")) {
+            // Transform the DOM document into XML file
+            javax.xml.transform.TransformerFactory transformerFactory = javax.xml.transform.TransformerFactory.newInstance();
+            javax.xml.transform.Transformer transformer = transformerFactory.newTransformer();
+            javax.xml.transform.dom.DOMSource source = new javax.xml.transform.dom.DOMSource(doc);
+            javax.xml.transform.stream.StreamResult result = new javax.xml.transform.stream.StreamResult(writer);
+            transformer.transform(source, result);
         }
-        a {
-            display: inline-block;
-            padding: 10px 15px;
-            margin: 10px 0;
-            text-decoration: none;
-            background-color: #007bff;
-            color: white;
-            border-radius: 5px;
-        }
-        a:hover {
-            background-color: #0056b3;
-        }
-    </style>
-</head>
-<body>
-    <h1>Welcome</h1>
-    <a href="{{ url_for('log') }}">View Log</a>
-</body>
-</html>
+
+        System.out.println("Generated changelog.xml file successfully.");
+    }
+
+    private static void addChangeSet(Document doc, Element rootElement, String id, String comment, String author, String sqlFile) {
+        // Create changeSet element
+        Element changeSet = doc.createElement("changeSet");
+        changeSet.setAttribute("id", id);
+        changeSet.setAttribute("author", author);
+        rootElement.appendChild(changeSet);
+
+        // Add comment element
+        Element commentElement = doc.createElement("comment");
+        commentElement.appendChild(doc.createTextNode(comment));
+        changeSet.appendChild(commentElement);
+
+        // Add sqlFile element
+        Element sqlFileElement = doc.createElement("sqlFile");
+        sqlFileElement.setAttribute("path", sqlFile);
+        sqlFileElement.setAttribute("relativeToChangelogFile", "true");
+        changeSet.appendChild(sqlFileElement);
+    }
+}
