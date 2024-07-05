@@ -1,62 +1,66 @@
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
-public class GenerateChangelogXML {
-
-    public static void main(String[] args) throws Exception {
-        // Create XML document
-        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-        Document doc = dBuilder.newDocument();
-
-        // Create root element
-        Element rootElement = doc.createElement("databaseChangeLog");
-        doc.appendChild(rootElement);
-
-        // Example: Add changeSet for sample.sql
-        addChangeSet(doc, rootElement, "1", "Add sample table", "your_author", "sample.sql");
-
-        // Example: Add changeSet for table.sql
-        addChangeSet(doc, rootElement, "2", "Add table table", "your_author", "table.sql");
-
-        // Write the content into a XML file
-        File xmlFile = new File("changelog.xml");
-        try (Writer writer = new OutputStreamWriter(new FileOutputStream(xmlFile), "UTF-8")) {
-            // Transform the DOM document into XML file
-            javax.xml.transform.TransformerFactory transformerFactory = javax.xml.transform.TransformerFactory.newInstance();
-            javax.xml.transform.Transformer transformer = transformerFactory.newTransformer();
-            javax.xml.transform.dom.DOMSource source = new javax.xml.transform.dom.DOMSource(doc);
-            javax.xml.transform.stream.StreamResult result = new javax.xml.transform.stream.StreamResult(writer);
-            transformer.transform(source, result);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV Data</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
         }
-
-        System.out.println("Generated changelog.xml file successfully.");
-    }
-
-    private static void addChangeSet(Document doc, Element rootElement, String id, String comment, String author, String sqlFile) {
-        // Create changeSet element
-        Element changeSet = doc.createElement("changeSet");
-        changeSet.setAttribute("id", id);
-        changeSet.setAttribute("author", author);
-        rootElement.appendChild(changeSet);
-
-        // Add comment element
-        Element commentElement = doc.createElement("comment");
-        commentElement.appendChild(doc.createTextNode(comment));
-        changeSet.appendChild(commentElement);
-
-        // Add sqlFile element
-        Element sqlFileElement = doc.createElement("sqlFile");
-        sqlFileElement.setAttribute("path", sqlFile);
-        sqlFileElement.setAttribute("relativeToChangelogFile", "true");
-        changeSet.appendChild(sqlFileElement);
-    }
-}
+        table {
+            width: 80%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 1em;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+        }
+        thead {
+            background-color: #009879;
+            color: #ffffff;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+        }
+        tr {
+            border-bottom: 1px solid #dddddd;
+        }
+        tr:nth-of-type(even) {
+            background-color: #f3f3f3;
+        }
+        tr:last-of-type {
+            border-bottom: 2px solid #009879;
+        }
+    </style>
+</head>
+<body>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Author</th>
+                <th>SQL File Path</th>
+                <th>Rollback File Path</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in data %}
+            <tr>
+                <td>{{ row['ID'] }}</td>
+                <td>{{ row['author'] }}</td>
+                <td>{{ row['sql file path'] }}</td>
+                <td>{{ row['roll back file path'] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
