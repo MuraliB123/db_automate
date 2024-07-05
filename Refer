@@ -1,83 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CSV Data</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f4f4f4;
-        }
-        table {
-            width: 80%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            font-size: 1em;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
-        }
-        thead {
-            background-color: #009879;
-            color: #ffffff;
-        }
-        th, td {
-            padding: 12px 15px;
-            text-align: left;
-        }
-        tr {
-            border-bottom: 1px solid #dddddd;
-        }
-        tr:nth-of-type(even) {
-            background-color: #f3f3f3;
-        }
-        tr:last-of-type {
-            border-bottom: 2px solid #009879;
-        }
-        .tag-button {
-            background-color: #009879;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-        }
-    </style>
-</head>
-<body>
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Author</th>
-                <th>SQL File Path</th>
-                <th>Rollback File Path</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for row in data %}
-            <tr>
-                <td>{{ row['ID'] }}</td>
-                <td>{{ row['author'] }}</td>
-                <td>{{ row['sql file path'] }}</td>
-                <td>{{ row['roll back file path'] }}</td>
-                <td>
-                    <form action="/tag" method="post">
-                        <input type="hidden" name="id" value="{{ row['ID'] }}">
-                        <input type="hidden" name="author" value="{{ row['author'] }}">
-                        <input type="hidden" name="sql_file_path" value="{{ row['sql file path'] }}">
-                        <input type="hidden" name="rollback_file_path" value="{{ row['roll back file path'] }}">
-                        <button type="submit" class="tag-button">Tag</button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</body>
-</html>
+import xml.etree.ElementTree as ET
+
+def add_element_to_xml(file_path, new_element_tag, new_element_text):
+    tree = ET.parse(file_path)
+    root = tree.getroot()
+    
+    for item in root.findall('.//item'):  # Adjust the XPath to match your XML structure
+        new_element = ET.Element(new_element_tag)
+        new_element.text = new_element_text
+        item.append(new_element)
+    
+    tree.write(file_path)  # Save changes back to the file
+
+# Example usage:
+file_path = 'data.xml'
+add_element_to_xml(file_path, 'new_element', 'This is a new element')
