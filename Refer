@@ -1,16 +1,51 @@
-import xml.etree.ElementTree as ET
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Highlight Row</title>
+    <style>
+        .highlight {
+            border-left: 5px solid red; /* Customize the border-left style as needed */
+        }
+    </style>
+</head>
+<body>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr id="row-{{ loop.index }}">
+                <td>{{ item.id }}</td>
+                <td>{{ item.name }}</td>
+                <td><button class="highlight-btn" data-row-id="row-{{ loop.index }}">Highlight</button></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
-def add_element_to_xml(file_path, new_element_tag, new_element_text):
-    tree = ET.parse(file_path)
-    root = tree.getroot()
-    
-    for item in root.findall('.//item'):  # Adjust the XPath to match your XML structure
-        new_element = ET.Element(new_element_tag)
-        new_element.text = new_element_text
-        item.append(new_element)
-    
-    tree.write(file_path)  # Save changes back to the file
-
-# Example usage:
-file_path = 'data.xml'
-add_element_to_xml(file_path, 'new_element', 'This is a new element')
+    <script>
+        // Add event listeners to all highlight buttons
+        document.querySelectorAll('.highlight-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove the highlight class from all rows
+                document.querySelectorAll('tr').forEach(row => {
+                    row.classList.remove('highlight');
+                });
+                
+                // Get the row ID from the data attribute
+                const rowId = this.getAttribute('data-row-id');
+                
+                // Add the highlight class to the corresponding row
+                document.getElementById(rowId).classList.add('highlight');
+            });
+        });
+    </script>
+</body>
+</html>
