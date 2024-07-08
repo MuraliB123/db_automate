@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Highlight Row</title>
+    <title>Highlight Rows</title>
     <style>
         .highlight {
             border-left: 5px solid red; /* Customize the border-left style as needed */
@@ -21,31 +21,33 @@
         </thead>
         <tbody>
             {% for item in items %}
-            <tr id="row-{{ loop.index }}">
+            <tr id="row-{{ item.id }}">
                 <td>{{ item.id }}</td>
                 <td>{{ item.name }}</td>
-                <td><button class="highlight-btn" data-row-id="row-{{ loop.index }}">Highlight</button></td>
+                <td>
+                    <button class="highlight-btn" data-row-id="row-{{ item.id }}">Highlight</button>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 
     <script>
-        // Add event listeners to all highlight buttons
-        document.querySelectorAll('.highlight-btn').forEach(button => {
-            button.addEventListener('click', function() {
-                // Remove the highlight class from all rows
-                document.querySelectorAll('tr').forEach(row => {
-                    row.classList.remove('highlight');
-                });
-                
-                // Get the row ID from the data attribute
-                const rowId = this.getAttribute('data-row-id');
-                
-                // Add the highlight class to the corresponding row
-                document.getElementById(rowId).classList.add('highlight');
+        // Get the list of highlighted row IDs from Flask
+        const highlightedRowIds = {{ highlighted_row_ids | tojson }};
+
+        // Function to highlight rows based on the list of IDs
+        function highlightRows() {
+            highlightedRowIds.forEach(rowId => {
+                const rowElement = document.getElementById('row-' + rowId);
+                if (rowElement) {
+                    rowElement.classList.add('highlight');
+                }
             });
-        });
+        }
+
+        // Highlight rows when the page loads
+        window.onload = highlightRows;
     </script>
 </body>
 </html>
