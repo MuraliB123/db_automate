@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Popup Box</title>
+    <title>Popup Form Example</title>
     <style>
         /* Styles for popup box */
         #popupBox {
@@ -31,14 +31,23 @@
     </style>
 </head>
 <body>
-    <h1>Popup Box Example</h1>
-    <button id="openPopupButton">Open Popup</button>
+    <h1>Form with Popup Example</h1>
+
+    <!-- Existing form -->
+    <form id="mainForm" action="/submit_form" method="post">
+        <!-- Hidden input values -->
+        <input type="hidden" name="hidden_input1" value="value1">
+        <input type="hidden" name="hidden_input2" value="value2">
+        <!-- New input tag will be appended here -->
+        <button type="button" id="openPopupButton">Add Tag</button>
+        <input type="submit" value="Submit Form">
+    </form>
 
     <div id="overlay"></div>
     <div id="popupBox">
         <label for="tagName">Enter Tag Name:</label>
-        <input type="text" id="tagName" name="tagName">
-        <button id="submitTagButton">Submit</button>
+        <input type="text" id="tagName">
+        <button id="submitTagButton">Submit Tag</button>
         <button id="closePopupButton">Close</button>
     </div>
 
@@ -56,23 +65,20 @@
         document.getElementById('submitTagButton').addEventListener('click', function() {
             const tagName = document.getElementById('tagName').value;
 
-            fetch('/submit_tag', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ tag_name: tagName }),
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Success:', data);
+            if (tagName) {
+                // Create a new hidden input field with the tag name
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'tag_name';
+                input.value = tagName;
+                document.getElementById('mainForm').appendChild(input);
+
                 // Close the popup box
                 document.getElementById('overlay').style.display = 'none';
                 document.getElementById('popupBox').style.display = 'none';
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
+            } else {
+                alert('Please enter a tag name.');
+            }
         });
     </script>
 </body>
