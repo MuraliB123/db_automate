@@ -3,66 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Form with Prompt</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-
-        form {
-            margin: 20px;
-        }
-
-        label {
-            display: block;
-            margin-top: 10px;
-        }
-
-        input[type="text"],
-        input[type="email"] {
-            width: 100%;
-            padding: 8px;
-            margin-top: 5px;
-            box-sizing: border-box;
-        }
-
-        button {
-            margin-top: 20px;
-            padding: 10px 20px;
-            font-size: 16px;
-        }
-    </style>
+    <title>Database Changelog</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-    {% for form in forms %}
-    <form class="mainForm" action="/submit" method="POST">
-        <label for="username_{{ loop.index }}">Username:</label>
-        <input type="text" id="username_{{ loop.index }}" name="username" required>
-        <br>
-        <label for="email_{{ loop.index }}">Email:</label>
-        <input type="email" id="email_{{ loop.index }}" name="email" required>
-        <br>
-        <input type="hidden" id="userPrompt_{{ loop.index }}" name="userPrompt">
-        <button type="submit">Submit</button>
-    </form>
-    {% endfor %}
-
-    <script>
-        document.querySelectorAll('.mainForm').forEach(function(form, index) {
-            form.addEventListener('submit', function(event) {
-                event.preventDefault(); // Prevent the default form submission
-
-                var userPromptValue = prompt("Please enter a value:");
-                if (userPromptValue !== null) { // Check if the user did not click cancel
-                    form.querySelector('input[name="userPrompt"]').value = userPromptValue;
-
-                    // Submit the form manually
-                    form.submit();
-                } else {
-                    alert("Submission cancelled.");
-                }
-            });
-        });
-    </script>
+    <div class="container">
+        <h1 class="mt-5">Database Changelog</h1>
+        <table class="table table-striped mt-3">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Author</th>
+                    <th>Filename</th>
+                    <th>Date Executed</th>
+                    <th>Order Executed</th>
+                    <th>Exec Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in changelog %}
+                <tr>
+                    <td>{{ row[0] }}</td>
+                    <td>{{ row[1] }}</td>
+                    <td>{{ row[2] }}</td>
+                    <td>{{ row[3] }}</td>
+                    <td>{{ row[4] }}</td>
+                    <td>{{ row[5] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
