@@ -5,35 +5,97 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Database Changelog</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* Custom CSS to shadow the existing content when the modal is active */
+        .modal-backdrop {
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <h1 class="mt-5">Database Changelog</h1>
-        <table class="table table-striped mt-3">
+        <header class="d-flex justify-content-between align-items-center mt-4">
+            <h1>Database Changelog</h1>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#chartsModal">
+                View Charts
+            </button>
+        </header>
+        
+        <!-- Example table content -->
+        <table class="table mt-4">
             <thead>
                 <tr>
-                    <th>ID</th>
                     <th>Author</th>
                     <th>Filename</th>
-                    <th>Date Executed</th>
-                    <th>Order Executed</th>
-                    <th>Exec Type</th>
+                    <th>Changes</th>
+                    <th>Date</th>
                 </tr>
             </thead>
             <tbody>
-                {% for row in changelog %}
                 <tr>
-                    <td>{{ row[0] }}</td>
-                    <td>{{ row[1] }}</td>
-                    <td>{{ row[2] }}</td>
-                    <td>{{ row[3] }}</td>
-                    <td>{{ row[4] }}</td>
-                    <td>{{ row[5] }}</td>
+                    <td>Author 1</td>
+                    <td>File 1</td>
+                    <td>5</td>
+                    <td>2024-07-10</td>
                 </tr>
-                {% endfor %}
+                <tr>
+                    <td>Author 2</td>
+                    <td>File 2</td>
+                    <td>3</td>
+                    <td>2024-07-11</td>
+                </tr>
+                <!-- Add more rows as needed -->
             </tbody>
         </table>
+
+        <!-- Footer -->
+        <footer class="mt-4">
+            <p>&copy; 2024 Database Changelog</p>
+        </footer>
     </div>
+
+    <!-- Modal for displaying charts -->
+    <div class="modal fade" id="chartsModal" tabindex="-1" aria-labelledby="chartsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="chartsModalLabel">Charts</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Carousel for displaying images -->
+                    <div id="chartsCarousel" class="carousel slide" data-ride="carousel">
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <img src="static/author_changes_red_yellow.png" class="d-block w-100" alt="Chart 1">
+                            </div>
+                            <div class="carousel-item">
+                                <img src="static/author_filename_heatmap.png" class="d-block w-100" alt="Chart 2">
+                            </div>
+                            <div class="carousel-item">
+                                <img src="static/another_chart.png" class="d-block w-100" alt="Chart 3">
+                            </div>
+                        </div>
+                        <a class="carousel-control-prev" href="#chartsCarousel" role="button" data-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                        <a class="carousel-control-next" href="#chartsCarousel" role="button" data-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS, Popper.js, and jQuery -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
