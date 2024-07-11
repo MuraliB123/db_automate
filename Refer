@@ -10,13 +10,23 @@
         .modal-backdrop {
             background-color: rgba(0, 0, 0, 0.5);
         }
+        /* Custom CSS for the red and white button */
+        .btn-red-white {
+            background-color: red;
+            color: white;
+            border: none;
+        }
+        .btn-red-white:hover {
+            background-color: darkred;
+            color: white;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header class="d-flex justify-content-between align-items-center mt-4">
             <h1>Database Changelog</h1>
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#chartsModal">
+            <button type="button" class="btn btn-red-white" data-toggle="modal" data-target="#chartsModal">
                 View Charts
             </button>
         </header>
@@ -73,6 +83,7 @@
                             </div>
                             <div class="carousel-item">
                                 <img src="static/author_filename_heatmap.png" class="d-block w-100" alt="Chart 2">
+                                <div id="csvTableContainer" class="mt-3"></div>
                             </div>
                             <div class="carousel-item">
                                 <img src="static/another_chart.png" class="d-block w-100" alt="Chart 3">
@@ -96,8 +107,51 @@
     </div>
 
     <!-- Bootstrap JS, Popper.js, and jQuery -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body>
-</html>
+
+    <!-- Custom JS to load and display CSV content -->
+    <script>
+        $(document).ready(function() {
+            $('#chartsCarousel').on('slid.bs.carousel', function(event) {
+                if ($(event.relatedTarget).find('img').attr('alt') === 'Chart 2') {
+                    // Load the CSV file and display it in the table
+                    $.ajax({
+                        url: 'static/filename_id_mapping.csv',
+                        dataType: 'text',
+                    }).done(function(data) {
+                        var allRows = data.split(/\r?\n|\r/);
+                        var table = '<table class="table table-striped">';
+                        for (var singleRow = 0; singleRow < allRows.length; singleRow++) {
+                            if (singleRow === 0) {
+                                table += '<thead>';
+                                table += '<tr>';
+                            } else {
+                                table += '<tr>';
+                            }
+                            var rowCells = allRows[singleRow].split(',');
+                            for (var rowCell = 0; rowCell < rowCells.length; rowCell++) {
+                                if (singleRow === 0) {
+                                    table += '<th>';
+                                    table += rowCells[rowCell];
+                                    table += '</th>';
+                                } else {
+                                    table += '<td>';
+                                    table += rowCells[rowCell];
+                                    table += '</td>';
+                                }
+                            }
+                            if (singleRow === 0) {
+                                table += '</tr>';
+                                table += '</thead>';
+                                table += '<tbody>';
+                            } else {
+                                table += '</tr>';
+                            }
+                        }
+                        table += '</tbody>';
+                        table += '</table>';
+                        $('#csvTableContainer').html(table);
+                    });
+            
